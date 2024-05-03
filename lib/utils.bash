@@ -34,21 +34,7 @@ list_all_versions() {
 }
 
 get_platform() {
-  local silent=${1:-}
-  local platform=""
-
-  platform="$(uname)"
-
-  case "$platform" in
-  Linux | Darwin)
-    [ -z "$silent" ] && msg "Platform '${platform}' supported!"
-    ;;
-  *)
-    fail "Platform '${platform}' not supported!"
-    ;;
-  esac
-
-  echo -n "$platform"
+	uname | tr '[:upper:]' '[:lower:]'
 }
 
 msg() {
@@ -60,16 +46,14 @@ err() {
 }
 
 get_arch() {
-  local arch=""
+	local arch
+	arch=${DOCKER_COMPOSE_V1_ARCH:-"$(uname -m)"}
 
-  case "$(uname -m)" in
-  x86_64 | amd64) arch="x86_64" ;;
-  *)
-    fail "Arch '$(uname -m)' not supported!"
-    ;;
-  esac
+	case "$arch" in
+	'arm64') arch="aarch64" ;;
+	esac
 
-  echo -n $arch
+	echo "$arch"
 }
 
 download_release() {
